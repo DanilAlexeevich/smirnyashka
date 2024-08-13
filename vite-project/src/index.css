@@ -13,6 +13,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.vas {
+  border-radius: 50%;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
