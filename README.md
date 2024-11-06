@@ -126,4 +126,35 @@ update(keys) {
             }
         });
     }
+
+
+
+performAttack() {
+        // Увеличиваем шаг комбо и проверяем, на каком этапе анимация
+        this.attackStep++;
+        if(this.lookRight){
+            if (this.attackStep === 1) {
+                this.sprite.play('attack1R');
+            } else if (this.attackStep === 2) {
+                this.sprite.play('attack2R');
+            } else if (this.attackStep === 3) {
+                this.sprite.play('attack3R');
+                this.attackStep = 0; // Сброс после последнего удара
+            }
+        }else {
+            if (this.attackStep === 1) {
+                this.sprite.play('attack1L');
+            } else if (this.attackStep === 2) {
+                this.sprite.play('attack2L');
+            } else if (this.attackStep === 3) {
+                this.sprite.play('attack3L');
+                this.attackStep = 0; // Сброс после последнего удара
+            }
+        }
+        // Перезапуск таймера для сброса комбо
+        clearTimeout(this.attackTimeout);
+        this.attackTimeout = setTimeout(() => {
+            this.attackStep = 0;
+        }, 1000); // Тайм-аут для сброса комбинации (500 мс)
+    }
 ```
