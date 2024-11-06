@@ -1,5 +1,6 @@
 # smirnyashka
-''' javascript
+
+``` javascript
 update(keys) {
         const INACTIVITY_THRESHOLD = 1000;
         const INACTIVITY_Breeze = 200;
@@ -125,4 +126,4 @@ update(keys) {
             }
         });
     }
-'''
+```
