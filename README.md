@@ -779,4 +779,100 @@ function update() {
 
 // Создание игры
 game = new Phaser.Game(config);
+
+
+
+
+
+
+
+
+handleAttack() {
+        this.isAttacking = true;
+        if (this.isComboComplete) {
+            // Игнорируем клики, пока комбо завершено
+            return;
+        }
+    
+        if (this.isComboInProgress) {
+            if (this.comboQueue.length < 3) {
+                // Проверяем, что есть валидный этап перед добавлением
+                const lastStage = this.comboQueue[this.comboQueue.length - 1] || 1;
+                const nextStage = lastStage + 1;
+                this.comboQueue.push(Math.min(nextStage, 3));
+                console.log("Добавлен следующий удар:", this.comboQueue);
+            }
+        } else {
+            // Начало нового комбо с первой стадии
+            
+            this.isComboInProgress = true;
+            this.comboQueue = [1];
+            console.log("Начало нового комбо:", this.comboQueue);
+            this.processCombo();
+        }
+    
+        clearTimeout(this.comboTimer);
+        this.comboTimer = setTimeout(() => {
+            this.resetCombo();
+        }, this.comboTimeout);
+    }
+    
+    resetCombo() {
+        this.isAttacking = false;
+        this.canAttack = true;
+        this.isComboInProgress = false;
+        this.player.disableHitboxes();
+        this.comboQueue = [];
+        this.comboStep = 1;
+        console.log("Комбо сброшено");
+    }
+    
+    processCombo() {
+        if (this.comboQueue.length === 0) {
+            // setTimeout(() => this.resetCombo(), 1000);
+            return;
+        }
+    
+        this.comboStep = this.comboQueue.shift() || 1;
+        console.log("Этап комбо:", this.comboStep);
+    
+        const attackPrefix = this.withBlade ? 'bladeAttack' : 'attack';
+        const direction = this.lookRight ? 'R' : 'L';
+        const animationKey = `${attackPrefix}${this.comboStep}${direction}`;
+        console.log("Ключ анимации:", animationKey);
+    
+        this.sprite.anims.play(animationKey, true);
+        console.log("Проигрывание анимации:", animationKey);
+        this.player.createHitboxForStage(this.comboStep);
+
+        this.sprite.once('animationcomplete', (animation) => {
+
+            console.log("Анимация завершена:", animation.key);
+    
+            if (animation.key === animationKey) {
+                if (this.comboQueue.length > 0) {
+                    setTimeout(() => this.processCombo(), 1);
+                    this.canAttack = false;
+                }          
+            }
+        });
+    }
+    
+    
+    
+    // Включаем hitbox для указанной стадии комбо
+    activateHitbox(step) {
+        this.player.disableHitboxes();
+        switch (step) {
+            case 1:
+                this.player.hitbox1.setActive(true).setVisible(true);
+                break;
+            case 2:
+                this.player.hitbox2.setActive(true).setVisible(true);
+                break;
+            case 3:
+                this.player.hitbox3.setActive(true).setVisible(true);
+            break;
+        }
+    }
 ```
